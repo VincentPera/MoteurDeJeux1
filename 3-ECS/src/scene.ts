@@ -44,7 +44,6 @@ export class Scene {
       const scene = new Scene(description);
       Scene.current = scene;
       var keys = Object.keys(description);
-      //console.log(description);
       for (var i = 0; i < keys.length; i++) {
           var masterEntity: Entity;
           masterEntity = new Entity();
@@ -59,8 +58,8 @@ export class Scene {
   }
 
   static sceneFn(description: IEntityDesc, currentEntity: IEntity) {
-      console.log("Description :")
-      console.log(description);
+      /*console.log("Description :")
+      console.log(description);*/
       for (var j = 0; j < Object.keys(description.children).length; j++) {  //Children loop
           //console.log(Object.keys(description[currentScene].children));
           var child: Entity;
@@ -72,13 +71,14 @@ export class Scene {
           console.log("-----Fin Test-----");*/
           entitySuiv = description.children[j];
           currentEntity.addChild(Object.keys(description.children)[j], child);
-          console.log("Ajout de Child:");
-          console.log(Object.keys(description.children)[j]);
+          /*console.log("Ajout de Child:");
+          console.log(Object.keys(description.children)[j]);*/
+          this.current._object.set(Object.keys(description.children)[j], child);
           this.sceneFn(description.children[Object.keys(description.children)[j]], child);
       }
       for (var k = 0; k < Object.keys(description.components).length; k++) {  //Components loop
-          console.log("Ajout de Component:");
-          console.log(Object.keys(description.components)[k]);
+          /*console.log("Ajout de Component:");
+          console.log(Object.keys(description.components)[k]);*/
           currentEntity.addComponent(Object.keys(description.components)[k]);
       }
   }
@@ -95,10 +95,10 @@ export class Scene {
   // scène et appelle la fonction `fn` pour chacun, afin
   // d'implémenter le patron de conception [visiteur](https://fr.wikipedia.org/wiki/Visiteur_(patron_de_conception)).
   walk(fn: ISceneWalker): Promise<any> {
-      return new Promise((resolve) => {
+      return new Promise((resolve => {
           this._object.forEach((value: IEntity, key: string) => {
-              fn(value, key);
+              resolve(fn(value, key));
           });
-      });
+      }));
   }
 }
