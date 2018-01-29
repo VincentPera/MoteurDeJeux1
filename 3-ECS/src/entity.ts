@@ -26,36 +26,51 @@ export class Entity implements IEntity {
   // ## Fonction *componentCreator*
   // Référence vers la fonction permettant de créer de
   // nouveaux composants. Permet ainsi de substituer
-  // cette fonction afin de réaliser des tests unitaires.
-  static componentCreator = ComponentFactory.create;
+    // cette fonction afin de réaliser des tests unitaires.
+    component: IComponent[] = [];
+    child: Map<string, IEntity> = new Map <string,IEntity>();
+    static componentCreator = ComponentFactory.create;
 
   // ## Méthode *addComponent*
   // Cette méthode prend en paramètre le type d'un composant et
   // instancie un nouveau composant.
   addComponent(type: string): IComponent {
-    const newComponent = Entity.componentCreator(type, this);
-    throw new Error('Not implemented');
+      const newComponent = Entity.componentCreator(type, this);
+      this.component[this.component.length] = newComponent;
+      return newComponent;
+      //throw new Error('Not implemented');
   }
 
   // ## Fonction *getComponent*
   // Cette fonction retourne un composant existant du type spécifié
   // associé à l'objet.
   getComponent<T extends IComponent>(type: string): T {
-    throw new Error('Not implemented');
+      var trouve = false;
+      var comp;
+      var i = 0;
+      while (!trouve && (i < this.component.length)) {
+          if (this.component[i].__type == type) {
+              trouve = true;
+              comp = this.component[i];
+          } else {
+              i = i + 1;
+          }
+      }
+      return comp as T;
   }
 
   // ## Méthode *addChild*
   // La méthode *addChild* ajoute à l'objet courant un objet
   // enfant.
   addChild(objectName: string, child: IEntity) {
-    throw new Error('Not implemented');
+      this.child.set(objectName, child);
   }
 
   // ## Fonction *getChild*
   // La fonction *getChild* retourne un objet existant portant le
   // nom spécifié, dont l'objet courant est le parent.
   getChild(objectName: string): IEntity | undefined {
-    throw new Error('Not implemented');
+      return this.child.get(objectName);
   }
 
   // ## Méthode *walkChildren*
@@ -63,7 +78,9 @@ export class Entity implements IEntity {
   // entité et appelle la fonction `fn` pour chacun, afin
   // d'implémenter le patron de conception [visiteur](https://fr.wikipedia.org/wiki/Visiteur_(patron_de_conception)).
   walkChildren(fn: IEntityWalker): void {
-    throw new Error('Not implemented');
+      this.child.forEach((value: IEntity, key: string) => {
+          fn(value, key);
+      });
   }
 
   // ## Méthode *walkComponent*
@@ -71,6 +88,8 @@ export class Entity implements IEntity {
   // entité et appelle la fonction `fn` pour chacun, afin
   // d'implémenter le patron de conception [visiteur](https://fr.wikipedia.org/wiki/Visiteur_(patron_de_conception)).
   walkComponent(fn: IComponentWalker): void {
-    throw new Error('Not implemented');
+      for (var i = 0; i < this.component.length; i++) {
+          fn(this.component[i], this.component[i].__type);
+      }
   }
 }

@@ -1,1 +1,5 @@
-../../1-Sequential/src/pong.ts
+import { run } from "./main";
+
+export function pong() {
+  run('canvas');
+}
