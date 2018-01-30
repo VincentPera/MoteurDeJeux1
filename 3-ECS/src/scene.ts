@@ -41,7 +41,8 @@ export class Scene {
   // retourne une promesse résolue lorsque l'ensemble de la
   // hiérarchie est configurée correctement.
     static create(description: ISceneDesc): Promise<Scene> {
-      var objects: IComponent[] = []
+        var objects: IComponent[] = []
+        var promises : any[] = [];
       const scene = new Scene(description);
       Scene.current = scene;
       var keys = Object.keys(description);
@@ -49,17 +50,17 @@ export class Scene {
           var masterEntity: Entity;
           masterEntity = new Entity();
           this.current._object.set(keys[i], masterEntity);
-          this.sceneFn(description[keys[i]], masterEntity, objects);
+          this.sceneFn(description[keys[i]], masterEntity, objects, promises);
       }
       /*return Promise.each(objects, function (obj, index) {
           return obj.setup(description[keys[index]]);
           // la méthode "setup" retourne une promesse
       });*/
-      return new Promise((resolve => { resolve(scene); }));
-      
+      //return new Promise((resolve => { resolve(scene); }));
+      return Promise.all(promises).then(scene => { return new Promise((resolve => { resolve(scene); })); } );
 
-      
-    }
+
+      }
 
     /*static handlePromise(obj: IComponent[], indice: any): Promise<any> {
         return new Promise((resolve => {
@@ -92,7 +93,7 @@ export class Scene {
       this._description = description;
   }
 
-  static sceneFn(description: IEntityDesc, currentEntity: IEntity, obj: IComponent[]) {
+  static sceneFn(description: IEntityDesc, currentEntity: IEntity, obj: IComponent[], prom: any[]) {
       for (var j = 0; j < Object.keys(description.children).length; j++) {  //Children loop
           var child: Entity;
           child = new Entity();
@@ -100,10 +101,12 @@ export class Scene {
           entitySuiv = description.children[j];
           currentEntity.addChild(Object.keys(description.children)[j], child);
           this.current._object.set(Object.keys(description.children)[j], child);
-          this.sceneFn(description.children[Object.keys(description.children)[j]], child, obj);
+          this.sceneFn(description.children[Object.keys(description.children)[j]], child, obj, prom);
       }
       for (var k = 0; k < Object.keys(description.components).length; k++) {  //Components loop
           var current_component = currentEntity.addComponent(Object.keys(description.components)[k]);
+          var promise = current_component.setup;
+          prom.push(promise);
           obj.push(current_component);
       }
   }
