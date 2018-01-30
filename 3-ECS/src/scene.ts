@@ -58,27 +58,16 @@ export class Scene {
   }
 
   static sceneFn(description: IEntityDesc, currentEntity: IEntity) {
-      /*console.log("Description :")
-      console.log(description);*/
       for (var j = 0; j < Object.keys(description.children).length; j++) {  //Children loop
-          //console.log(Object.keys(description[currentScene].children));
           var child: Entity;
           child = new Entity();
           var entitySuiv: IEntityDesc;
-          /*console.log("-----Test-----");
-          console.log(Object.keys(description.children)[j]);
-          console.log(description.children[Object.keys(description.children)[j]]);
-          console.log("-----Fin Test-----");*/
           entitySuiv = description.children[j];
           currentEntity.addChild(Object.keys(description.children)[j], child);
-          /*console.log("Ajout de Child:");
-          console.log(Object.keys(description.children)[j]);*/
           this.current._object.set(Object.keys(description.children)[j], child);
           this.sceneFn(description.children[Object.keys(description.children)[j]], child);
       }
       for (var k = 0; k < Object.keys(description.components).length; k++) {  //Components loop
-          /*console.log("Ajout de Component:");
-          console.log(Object.keys(description.components)[k]);*/
           currentEntity.addComponent(Object.keys(description.components)[k]);
       }
   }

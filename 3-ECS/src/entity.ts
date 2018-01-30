@@ -27,7 +27,7 @@ export class Entity implements IEntity {
   // Référence vers la fonction permettant de créer de
   // nouveaux composants. Permet ainsi de substituer
     // cette fonction afin de réaliser des tests unitaires.
-    component: IComponent[] = [];
+    component: Array<IComponent> = new Array<IComponent>();
     child: Map<string, IEntity> = new Map <string,IEntity>();
     static componentCreator = ComponentFactory.create;
 
@@ -36,9 +36,8 @@ export class Entity implements IEntity {
   // instancie un nouveau composant.
   addComponent(type: string): IComponent {
       const newComponent = Entity.componentCreator(type, this);
-      this.component[this.component.length] = newComponent;
+      this.component.push(newComponent);
       return newComponent;
-      //throw new Error('Not implemented');
   }
 
   // ## Fonction *getComponent*
