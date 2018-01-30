@@ -101,7 +101,8 @@ export class Scene {
       }
       for (var k = 0; k < Object.keys(description.components).length; k++) {  //Components loop
           var current_component = currentEntity.addComponent(Object.keys(description.components)[k]);
-          var promise = current_component.setup;
+          var promise = current_component.setup(Object.keys(description.components)[k]);
+          console.log(typeof (promise));
           prom.push(promise);
           obj.push(current_component);
       }
