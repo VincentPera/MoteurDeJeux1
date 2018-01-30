@@ -52,12 +52,8 @@ export class Scene {
           this.current._object.set(keys[i], masterEntity);
           this.sceneFn(description[keys[i]], masterEntity, objects, promises);
       }
-      /*return Promise.each(objects, function (obj, index) {
-          return obj.setup(description[keys[index]]);
-          // la méthode "setup" retourne une promesse
-      });*/
       //return new Promise((resolve => { resolve(scene); }));
-      return Promise.all(promises).then(scene => { return new Promise((resolve => { resolve(scene); })); } );
+      return Promise.all(promises).then(scene => { return Scene.current });
 
 
       }
