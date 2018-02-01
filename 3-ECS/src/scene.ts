@@ -41,21 +41,33 @@ export class Scene {
   // retourne une promesse résolue lorsque l'ensemble de la
   // hiérarchie est configurée correctement.
     static create(description: ISceneDesc): Promise<Scene> {
-        var objects: IComponent[] = []
-        var promises : any[] = [];
+        var objects: IComponent[] = [];
+        var desc: string[] = [];
+        var promises : Promise<any>[] = [];
       const scene = new Scene(description);
       Scene.current = scene;
       var keys = Object.keys(description);
       for (var i = 0; i < keys.length; i++) {
-          var masterEntity: Entity;
+          var masterEntity: IEntity;
           masterEntity = new Entity();
           this.current._object.set(keys[i], masterEntity);
-          this.sceneFn(description[keys[i]], masterEntity, objects, promises);
+          this.sceneFn(description[keys[i]], masterEntity, objects, desc);
       }
-      //return new Promise((resolve => { resolve(scene); }));
+
+
+      for (var ii = 0; ii < objects.length; ii++){
+          var promise = objects[ii].setup(desc[ii]) as Promise<any>;
+
+          if (promise != undefined) {
+              promises.push(promise as Promise<any>);
+              console.log(typeof (promise));
+              console.log((promise));
+          }
+      }
+
+
       return Promise.all(promises).then(scene => { return Scene.current });
-
-
+      //return Promise.all(promises).then(scene => { return Scene.current });
       }
 
     /*static handlePromise(obj: IComponent[], indice: any): Promise<any> {
@@ -89,25 +101,19 @@ export class Scene {
       this._description = description;
   }
 
-  static sceneFn(description: IEntityDesc, currentEntity: IEntity, obj: IComponent[], prom: any[]) {
+  static sceneFn(description: IEntityDesc, currentEntity: IEntity, obj: IComponent[], desc:string[]) {
       for (var j = 0; j < Object.keys(description.children).length; j++) {  //Children loop
-          var child: Entity;
+          var child: IEntity;
           child = new Entity();
           var entitySuiv: IEntityDesc;
           entitySuiv = description.children[j];
           currentEntity.addChild(Object.keys(description.children)[j], child);
           this.current._object.set(Object.keys(description.children)[j], child);
-          this.sceneFn(description.children[Object.keys(description.children)[j]], child, obj, prom);
+          this.sceneFn(description.children[Object.keys(description.children)[j]], child, obj,desc);
       }
       for (var k = 0; k < Object.keys(description.components).length; k++) {  //Components loop
           var current_component = currentEntity.addComponent(Object.keys(description.components)[k]);
-          var promise = current_component.setup(Object.keys(description.components)[k]) as Promise<any>;;
-          
-          if (promise != undefined) {
-              prom.push(promise);
-              console.log(typeof(promise));
-          }
-          //prom.push(promise);
+          desc.push(Object.keys(description.components)[k]);
           obj.push(current_component);
       }
   }
