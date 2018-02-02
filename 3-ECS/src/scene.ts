@@ -56,10 +56,8 @@ export class Scene {
 
       for (var ii = 0; ii < objects.length; ii++){
           var promise = objects[ii].setup(desc[ii]);
-          console.log(desc[ii]);
           if (promise != undefined) {
               promises.push(promise as Promise<any>);
-              console.log("PUSH");
           }
       }
 
@@ -110,7 +108,8 @@ export class Scene {
       }
       for (var k = 0; k < Object.keys(description.components).length; k++) {  //Components loop
           var current_component = currentEntity.addComponent(Object.keys(description.components)[k]);
-          desc.push(Object.keys(description.components)[k]);
+          console.log(description.components[Object.keys(description.components)[k]]);
+          desc.push(description.components[Object.keys(description.components)[k]]);
           obj.push(current_component);
       }
   }
