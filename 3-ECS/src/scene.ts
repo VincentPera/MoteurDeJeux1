@@ -54,20 +54,17 @@ export class Scene {
           this.sceneFn(description[keys[i]], masterEntity, objects, desc);
       }
 
-
       for (var ii = 0; ii < objects.length; ii++){
-          var promise = objects[ii].setup(desc[ii]) as Promise<any>;
-
+          var promise = objects[ii].setup(desc[ii]);
+          console.log(desc[ii]);
           if (promise != undefined) {
               promises.push(promise as Promise<any>);
-              console.log(typeof (promise));
-              console.log((promise));
+              console.log("PUSH");
           }
       }
 
 
       return Promise.all(promises).then(scene => { return Scene.current });
-      //return Promise.all(promises).then(scene => { return Scene.current });
       }
 
     /*static handlePromise(obj: IComponent[], indice: any): Promise<any> {
